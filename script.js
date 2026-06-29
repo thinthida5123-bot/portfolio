@@ -1,79 +1,65 @@
+// Typing Effect
 const typingText = document.querySelector(".typing");
-
 const words = ["Frontend Developer", "CS Student", "Web Learner"];
-
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
 
 function typeEffect() {
-  const currentWord = words[wordIndex];
+    const currentWord = words[wordIndex];
+    if (isDeleting) {
+        typingText.textContent = currentWord.substring(0, charIndex--);
+    } else {
+        typingText.textContent = currentWord.substring(0, charIndex++);
+    }
 
-  if (isDeleting) {
-    typingText.textContent = currentWord.substring(0, charIndex--);
-  } else {
-    typingText.textContent = currentWord.substring(0, charIndex++);
-  }
+    if (!isDeleting && charIndex === currentWord.length) {
+        isDeleting = true;
+        setTimeout(typeEffect, 1500);
+        return;
+    }
 
-  if (!isDeleting && charIndex === currentWord.length) {
-    isDeleting = true;
-    setTimeout(typeEffect, 1200);
-    return;
-  }
-
-  if (isDeleting && charIndex === 0) {
-    isDeleting = false;
-    wordIndex = (wordIndex + 1) % words.length;
-  }
-
-  setTimeout(typeEffect, isDeleting ? 60 : 120);
+    if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+    }
+    setTimeout(typeEffect, isDeleting ? 50 : 100);
 }
-
 typeEffect();
 
+// Scroll Spy for Navbar
 const sections = document.querySelectorAll("section");
-const navLinks = document.querySelectorAll(".nav-links a");
+const navLinks = document.querySelectorAll("nav a");
 
 window.addEventListener("scroll", () => {
-  let current = "";
+    let current = "";
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 150;
+        if (scrollY >= sectionTop) {
+            current = section.getAttribute("id");
+        }
+    });
 
-  sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100;
-    if (scrollY >= sectionTop) {
-      current = section.getAttribute("id");
-    }
-  });
-
-  navLinks.forEach(link => {
-    link.classList.remove("active");
-    if (link.getAttribute("href").includes(current)) {
-      link.classList.add("active");
-    }
-  });
+    navLinks.forEach(link => {
+        link.classList.remove("text-indigo-400");
+        if (link.getAttribute("href").includes(current)) {
+            link.classList.add("text-indigo-400");
+        }
+    });
 });
 
-const form = document.querySelector(".contact-form");
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  alert("Message sent successfully 🚀");
-
-  form.reset();
-});
-
+// Fade-in Animation on Scroll
+const observerOptions = { threshold: 0.1 };
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = 1;
-      entry.target.style.transform = "translateY(0)";
-    }
-  });
-});
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("opacity-100", "translate-y-0");
+            entry.target.classList.remove("opacity-0", "translate-y-10");
+        }
+    });
+}, observerOptions);
 
-document.querySelectorAll(".section").forEach(section => {
-  section.style.opacity = 0;
-  section.style.transform = "translateY(40px)";
-  section.style.transition = "0.6s ease";
-  observer.observe(section);
+document.querySelectorAll("section").forEach(section => {
+    section.classList.add("opacity-0", "translate-y-10", "transition", "duration-700", "ease-out");
+    observer.observe(section);
 });
